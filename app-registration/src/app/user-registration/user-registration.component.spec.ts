@@ -1,21 +1,36 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ApiService } from '../api.service'; // Create this service to interact with mock APIs
 
-import { UserRegistrationComponent } from './user-registration.component';
+@Component({
+  selector: 'app-user-registration',
+  templateUrl: './user-registration.component.html',
+  styleUrls: ['./user-registration.component.css']
+})
+export class UserRegistrationComponent implements OnInit {
+  registrationForm: FormGroup;
 
-describe('UserRegistrationComponent', () => {
-  let component: UserRegistrationComponent;
-  let fixture: ComponentFixture<UserRegistrationComponent>;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [UserRegistrationComponent]
+  constructor(private fb: FormBuilder, private apiService: ApiService) {
+    this.registrationForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      // Add validators for password and bio here
     });
-    fixture = TestBed.createComponent(UserRegistrationComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  }
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  ngOnInit(): void {}
+
+  registerUser() {
+    if (this.registrationForm.valid) {
+      const userData = this.registrationForm.value;
+      this.apiService.registerUser(userData).subscribe(
+        (response) => {
+          // Handle successful registration here and navigate to the Profile Page
+        },
+        (error) => {
+          // Handle registration error
+        }
+      );
+    }
+  }
+}
